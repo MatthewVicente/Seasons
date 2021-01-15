@@ -1,17 +1,44 @@
-import React from 'react';
+import React from "react";
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			lat: null,
+			long: null,
+			errorMessage: ''
+		};
+
+		window.navigator.geolocation.getCurrentPosition(
+			(positions) => {
+				this.setState({ lat: positions.coords.latitude });
+			},
+			(err) => {
+				this.setState({ errorMessage: err.message });
+			}
+		);
+	}
+
+	render() {
+		if (this.state.errorMessage && !this.state.lat) {
+			return <h3>Error: {this.state.errorMessage}</h3>;
+		}
+
+		if (!this.state.errorMessage && this.state.lat) {
+			return (
+				<div>
+					<h3>Latitude: {this.state.lat}</h3>		
+				</div>
+			);
+		}
+
+		return <h1>Loading...</h1>
+	}
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+	<App/>, 
+	document.querySelector('#root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
